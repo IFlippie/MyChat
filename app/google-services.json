@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "680923794912",
+    "firebase_url": "https://mychatty-69.firebaseio.com",
+    "project_id": "mychatty-69",
+    "storage_bucket": "mychatty-69.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:680923794912:android:6c0de92e3840b9a8a76f85",
+        "android_client_info": {
+          "package_name": "com.iflippie.mychat"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "680923794912-urfpe4h0bpahtflniriebfv2b3io8sti.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDJnZQ_OlTsA-LEY4Pc0RDEoO1FPLc0XZY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "680923794912-urfpe4h0bpahtflniriebfv2b3io8sti.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
