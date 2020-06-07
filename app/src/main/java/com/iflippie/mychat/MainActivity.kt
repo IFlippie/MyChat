@@ -1,5 +1,6 @@
 package com.iflippie.mychat
 
+import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.preference.PreferenceManager
@@ -16,6 +17,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.gms.auth.api.Auth
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.api.GoogleApiClient
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import de.hdodenhof.circleimageview.CircleImageView
 
 class MainActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedListener {
@@ -35,7 +38,7 @@ class MainActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedList
     }
 
     private var mUsername: String? = null
-    private val mPhotoUrl: String? = null
+    private var mPhotoUrl: String? = null
     private var mSharedPreferences: SharedPreferences? = null
     private var mGoogleApiClient: GoogleApiClient? = null
     private var mSendButton: Button? = null
@@ -44,6 +47,8 @@ class MainActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedList
     private var mProgressBar: ProgressBar? = null
     private var mMessageEditText: EditText? = null
     private var mAddMessageImageView: ImageView? = null
+    private val auth: FirebaseAuth by lazy { FirebaseAuth.getInstance()}
+    private val user: FirebaseUser? by lazy { auth.currentUser}
     // Firebase instance variables
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,8 +65,8 @@ class MainActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedList
         mMessageRecyclerView =
             findViewById<View>(R.id.messageRecyclerView) as RecyclerView
         mLinearLayoutManager = LinearLayoutManager(this)
-        mLinearLayoutManager!!.setStackFromEnd(true)
-        mMessageRecyclerView!!.setLayoutManager(mLinearLayoutManager)
+        mLinearLayoutManager!!.stackFromEnd = true
+        mMessageRecyclerView!!.layoutManager = mLinearLayoutManager
         mProgressBar!!.visibility = ProgressBar.INVISIBLE
         mMessageEditText = findViewById<View>(R.id.messageEditText) as EditText
         mMessageEditText!!.addTextChangedListener(object : TextWatcher {
@@ -79,11 +84,7 @@ class MainActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedList
                 i1: Int,
                 i2: Int
             ) {
-                if (charSequence.toString().trim { it <= ' ' }.length > 0) {
-                    mSendButton!!.isEnabled = true
-                } else {
-                    mSendButton!!.isEnabled = false
-                }
+                mSendButton!!.isEnabled = charSequence.toString().trim { it <= ' ' }.isNotEmpty()
             }
 
             override fun afterTextChanged(editable: Editable) {}
@@ -96,6 +97,16 @@ class MainActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedList
             findViewById<View>(R.id.addMessageImageView) as ImageView
         mAddMessageImageView!!.setOnClickListener {
             // Select image for image message on click.
+        }
+        if (user != null) {
+        mUsername = user?.displayName
+            if(user?.photoUrl != null){
+                mPhotoUrl = user?.photoUrl.toString()
+            }
+        }else {
+            val intent = Intent(this, SignInActivity::class.java)
+            startActivity(intent)
+            finish()
         }
     }
 
@@ -124,7 +135,17 @@ class MainActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedList
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return super.onOptionsItemSelected(item)
+        return when (item.itemId) {
+            R.id.sign_out_menu -> {
+                auth.signOut()
+                Auth.GoogleSignInApi.signOut(mGoogleApiClient)
+                mUsername = ANONYMOUS
+                val intent = Intent(this, SignInActivity::class.java)
+                startActivity(intent)
+                true
+            }
+            else -> false
+        }
     }
 
     override fun onConnectionFailed(connectionResult: ConnectionResult) { // An unresolvable error has occurred and Google APIs (including Sign-In) will not

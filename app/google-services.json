@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "680923794912-jcodq2uusjml0lhfek6cfdebadj0v4u7.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.iflippie.mychat",
+            "certificate_hash": "52b962396cefda3c5d6add668576cfb98bef34b0"
+          }
+        },
+        {
           "client_id": "680923794912-urfpe4h0bpahtflniriebfv2b3io8sti.apps.googleusercontent.com",
           "client_type": 3
         }
