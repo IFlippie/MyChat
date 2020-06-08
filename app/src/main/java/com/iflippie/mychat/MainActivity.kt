@@ -43,21 +43,18 @@ class MainActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedList
         var messengerImageView: CircleImageView = itemView.findViewById(R.id.messengerImageView) as CircleImageView
     }
 
-    private var mUsername: String? = null
-    private var mPhotoUrl: String? = null
-    private var mSharedPreferences: SharedPreferences? = null
-    private var mGoogleApiClient: GoogleApiClient? = null
-    private var mSendButton: Button? = null
+    private lateinit var mUsername: String
+    private lateinit var mPhotoUrl: String
+    private lateinit var mGoogleApiClient: GoogleApiClient
     private var mMessageRecyclerView: RecyclerView? = null
     private var mLinearLayoutManager: LinearLayoutManager? = null
     private var mMessageEditText: EditText? = null
-    private var mAddMessageImageView: ImageView? = null
     private val auth: FirebaseAuth by lazy { FirebaseAuth.getInstance()}
     private val user: FirebaseUser? by lazy { auth.currentUser}
 
     private lateinit var mFirebaseDatabaseReference: DatabaseReference
     private lateinit var mFirebaseAdapter: FirebaseRecyclerAdapter<FriendlyMessage, MessageViewHolder>
-    lateinit var options : FirebaseRecyclerOptions<FriendlyMessage>
+    private lateinit var options : FirebaseRecyclerOptions<FriendlyMessage>
     // Firebase instance variables
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -127,20 +124,20 @@ class MainActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedList
             }
         })
 
-        mMessageEditText = findViewById<View>(R.id.messageEditText) as EditText
-        mMessageEditText!!.addTextChangedListener(object : TextWatcher {
+
+        messageEditText.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {
 
             }
 
             override fun onTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {
-                mSendButton!!.isEnabled = charSequence.toString().trim { it <= ' ' }.isNotEmpty()
+                sendButton.isEnabled = charSequence.toString().trim { it <= ' ' }.isNotEmpty()
 
             }
 
             override fun afterTextChanged(editable: Editable) {}
         })
-        mSendButton = findViewById<View>(R.id.sendButton) as Button
+
         sendButton.setOnClickListener {
             var friendlyMess = FriendlyMessage(messageEditText.text.toString(), mUsername, mPhotoUrl, null)
             mFirebaseDatabaseReference.child(MESSAGES_CHILD).push().setValue(friendlyMess)
@@ -153,7 +150,7 @@ class MainActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedList
             startActivityForResult(intent, REQUEST_IMAGE)
         }
         if (user != null) {
-        mUsername = user?.displayName
+        mUsername = user?.displayName.toString()
             if(user?.photoUrl != null){
                 mPhotoUrl = user?.photoUrl.toString()
             }
