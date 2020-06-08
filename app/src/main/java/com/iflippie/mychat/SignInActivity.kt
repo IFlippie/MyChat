@@ -7,13 +7,15 @@ import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.auth.api.Auth
-import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.SignInButton
-import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.GoogleApiClient
+import com.google.android.gms.tasks.OnCompleteListener
+import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.GoogleAuthProvider
 
 
 class SignInActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedListener, View.OnClickListener {
@@ -56,18 +58,42 @@ class SignInActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedLi
         super.onActivityResult(requestCode, resultCode, data)
         // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
         if (requestCode == RC_SIGN_IN) {
-            val task = GoogleSignIn.getSignedInAccountFromIntent(data)
-            try {
-                // Google Sign In was successful, authenticate with Firebase
-                val account = task.getResult(ApiException::class.java)!!
-                Log.d(TAG, "firebaseAuthWithGoogle:" + account.id)
-                firebaseAuthWithGoogle(account.idToken!!)
-            } catch (e: ApiException) {
-                // Google Sign In failed, update UI appropriately
-                Log.w(TAG, "Google sign in failed", e)
-                // ...
+            val result = Auth.GoogleSignInApi.getSignInResultFromIntent(data)
+            if (result!!.isSuccess) { // Google Sign-In was successful, authenticate with Firebase
+                val account = result.signInAccount
+                firebaseAuthWithGoogle(account!!)
+            } else { // Google Sign-In failed
+                Log.e(TAG, "Google Sign-In failed.")
             }
         }
+    }
+
+    private fun firebaseAuthWithGoogle(acct: GoogleSignInAccount) {
+        Log.d(TAG, "firebaseAuthWithGooogle:" + acct.id)
+        val credential = GoogleAuthProvider.getCredential(acct.idToken, null)
+        auth.signInWithCredential(credential)
+            .addOnCompleteListener(this,
+                OnCompleteListener<AuthResult?> { task ->
+                    Log.d(TAG,
+                        "signInWithCredential:onComplete:" + task.isSuccessful
+                    )
+                    // If sign in fails, display a message to the user. If sign in succeeds
+                    // the auth state listener will be notified and logic to handle the
+                    // signed in user can be handled in the listener.
+                    if (!task.isSuccessful) {
+                        Log.w(TAG,
+                            "signInWithCredential",
+                            task.exception
+                        )
+                        Toast.makeText(
+                            this@SignInActivity, "Authentication failed.",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    } else {
+                        startActivity(Intent(this@SignInActivity, MainActivity::class.java))
+                        finish()
+                    }
+                })
     }
 
     override fun onConnectionFailed(connectionResult: ConnectionResult) { // An unresolvable error has occurred and Google APIs (including Sign-In) will not

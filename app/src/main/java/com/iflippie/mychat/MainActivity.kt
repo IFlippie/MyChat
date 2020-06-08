@@ -7,34 +7,35 @@ import android.preference.PreferenceManager
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
-import android.view.Menu
-import android.view.MenuItem
-import android.view.View
+import android.view.*
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.firebase.ui.database.FirebaseRecyclerAdapter
+import com.firebase.ui.database.FirebaseRecyclerOptions
+import com.firebase.ui.database.SnapshotParser
 import com.google.android.gms.auth.api.Auth
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.api.GoogleApiClient
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.Query
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageReference
 import de.hdodenhof.circleimageview.CircleImageView
+
 
 class MainActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedListener {
     class MessageViewHolder(v: View?) : RecyclerView.ViewHolder(v!!) {
-        var messageTextView: TextView
-        var messageImageView: ImageView
-        var messengerTextView: TextView
-        var messengerImageView: CircleImageView
-
-        init {
-            messageTextView = itemView.findViewById(R.id.messageTextView)
-            messageImageView =
-                itemView.findViewById(R.id.messageImageView)
-            messengerTextView = itemView.findViewById(R.id.messengerTextView)
-            messengerImageView = itemView.findViewById(R.id.messengerImageView) as CircleImageView
-        }
+        var messageTextView: TextView = itemView.findViewById(R.id.messageTextView)
+        var messageImageView: ImageView = itemView.findViewById(R.id.messageImageView)
+        var messengerTextView: TextView = itemView.findViewById(R.id.messengerTextView)
+        var messengerImageView: CircleImageView = itemView.findViewById(R.id.messengerImageView) as CircleImageView
     }
 
     private var mUsername: String? = null
@@ -49,6 +50,10 @@ class MainActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedList
     private var mAddMessageImageView: ImageView? = null
     private val auth: FirebaseAuth by lazy { FirebaseAuth.getInstance()}
     private val user: FirebaseUser? by lazy { auth.currentUser}
+    private var mFirebaseDatabaseReference: DatabaseReference? = null
+    private lateinit var mFirebaseAdapter: FirebaseRecyclerAdapter<FriendlyMessage, MessageViewHolder>
+
+    lateinit var options : FirebaseRecyclerOptions<FriendlyMessage>
     // Firebase instance variables
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -62,29 +67,84 @@ class MainActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedList
             .build()
         // Initialize ProgressBar and RecyclerView.
         mProgressBar = findViewById<View>(R.id.progressBar) as ProgressBar
-        mMessageRecyclerView =
-            findViewById<View>(R.id.messageRecyclerView) as RecyclerView
+        mMessageRecyclerView = findViewById<View>(R.id.messageRecyclerView) as RecyclerView
         mLinearLayoutManager = LinearLayoutManager(this)
         mLinearLayoutManager!!.stackFromEnd = true
         mMessageRecyclerView!!.layoutManager = mLinearLayoutManager
-        mProgressBar!!.visibility = ProgressBar.INVISIBLE
-        mMessageEditText = findViewById<View>(R.id.messageEditText) as EditText
-        mMessageEditText!!.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(
-                charSequence: CharSequence,
-                i: Int,
-                i1: Int,
-                i2: Int
-            ) {
+
+        mFirebaseDatabaseReference = FirebaseDatabase.getInstance().reference
+        val parser =
+            SnapshotParser<FriendlyMessage> { dataSnapshot ->
+                val friendlyMessage = dataSnapshot.getValue(FriendlyMessage::class.java)
+                friendlyMessage?.setId(dataSnapshot.key!!)
+                friendlyMessage!!
             }
 
-            override fun onTextChanged(
-                charSequence: CharSequence,
-                i: Int,
-                i1: Int,
-                i2: Int
+        val messagesRef: Query? = mFirebaseDatabaseReference?.child(MESSAGES_CHILD)
+        options = FirebaseRecyclerOptions.Builder<FriendlyMessage>().setQuery(messagesRef!!, parser).build()
+        mFirebaseAdapter = object: FirebaseRecyclerAdapter<FriendlyMessage, MessageViewHolder>(options){
+            override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MessageViewHolder {
+                return MessageViewHolder(
+                    LayoutInflater.from(parent.context).inflate(R.layout.item_message, parent, false)
+                )
+            }
+
+            override fun onBindViewHolder(holder: MessageViewHolder, position: Int, model: FriendlyMessage
             ) {
+                mProgressBar!!.visibility = ProgressBar.INVISIBLE
+                if (model.getText() != null) {
+                    holder.messageTextView.text = model.getText()
+                    holder.messageTextView.visibility = TextView.VISIBLE;
+                    holder.messageImageView.visibility = ImageView.GONE;
+                } else if (model.getImageUrl() != null) {
+                    val imageUrl: String? = model.getImageUrl()
+                    if (imageUrl!!.startsWith("gs://")) {
+                        val storageReference: StorageReference = FirebaseStorage.getInstance().getReferenceFromUrl(imageUrl)
+                        storageReference.downloadUrl.addOnCompleteListener { p0 ->
+                            if(p0.isSuccessful){
+                                val downloadUrl: String? = p0.result.toString()
+                                Glide.with(holder.messageImageView.context).load(downloadUrl).into(holder.messageImageView)
+                            }else {
+                                Log.w(TAG, "Getting download url was not successful.", p0.exception)
+                            }
+                        }
+                    } else {
+                        Glide.with(holder.messageImageView.context).load(model!!.getImageUrl()).into(holder.messageImageView)
+                    }
+                    holder.messageImageView.visibility = ImageView.VISIBLE
+                    holder.messageTextView.visibility = TextView.GONE
+                }
+
+                holder.messengerTextView.text = model.getName()
+                if (model.getPhotoUrl() == null) { holder.messengerImageView.setImageDrawable(
+                        ContextCompat.getDrawable(this@MainActivity, R.drawable.ic_account_circle_black_36dp))
+                } else {
+                    Glide.with(this@MainActivity).load(model.getPhotoUrl()).into(holder.messengerImageView)
+                }
+            }
+        }
+
+        mFirebaseAdapter.registerAdapterDataObserver(object: RecyclerView.AdapterDataObserver(){
+            override fun onItemRangeChanged(positionStart: Int, itemCount: Int, payload: Any?) {
+                super.onItemRangeChanged(positionStart, itemCount, payload)
+                val friendlyMessageCount: Int  = mFirebaseAdapter.itemCount
+                val lastVisiblePosition: Int = mLinearLayoutManager!!.findLastCompletelyVisibleItemPosition()
+
+                if(lastVisiblePosition == -1 || (positionStart >= (friendlyMessageCount - 1) && lastVisiblePosition == (positionStart - 1))){
+                    mMessageRecyclerView!!.scrollToPosition(positionStart)
+                }
+            }
+        })
+
+        mMessageEditText = findViewById<View>(R.id.messageEditText) as EditText
+        mMessageEditText!!.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {
+
+            }
+
+            override fun onTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {
                 mSendButton!!.isEnabled = charSequence.toString().trim { it <= ' ' }.isNotEmpty()
+
             }
 
             override fun afterTextChanged(editable: Editable) {}
@@ -118,10 +178,12 @@ class MainActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedList
 
     public override fun onPause() {
         super.onPause()
+        mFirebaseAdapter?.stopListening()
     }
 
     public override fun onResume() {
         super.onResume()
+        mFirebaseAdapter?.startListening()
     }
 
     public override fun onDestroy() {
