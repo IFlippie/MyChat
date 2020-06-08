@@ -69,26 +69,19 @@ class SignInActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedLi
     }
 
     private fun firebaseAuthWithGoogle(acct: GoogleSignInAccount) {
-        Log.d(TAG, "firebaseAuthWithGooogle:" + acct.id)
+        Log.d(TAG, "firebaseAuthWithGoogle:" + acct.id)
         val credential = GoogleAuthProvider.getCredential(acct.idToken, null)
         auth.signInWithCredential(credential)
             .addOnCompleteListener(this,
                 OnCompleteListener<AuthResult?> { task ->
-                    Log.d(TAG,
-                        "signInWithCredential:onComplete:" + task.isSuccessful
-                    )
+                    Log.d(TAG, "signInWithCredential:onComplete:" + task.isSuccessful)
                     // If sign in fails, display a message to the user. If sign in succeeds
                     // the auth state listener will be notified and logic to handle the
                     // signed in user can be handled in the listener.
                     if (!task.isSuccessful) {
-                        Log.w(TAG,
-                            "signInWithCredential",
-                            task.exception
-                        )
+                        Log.w(TAG, "signInWithCredential", task.exception)
                         Toast.makeText(
-                            this@SignInActivity, "Authentication failed.",
-                            Toast.LENGTH_SHORT
-                        ).show()
+                            this@SignInActivity, "Authentication failed.", Toast.LENGTH_SHORT).show()
                     } else {
                         startActivity(Intent(this@SignInActivity, MainActivity::class.java))
                         finish()
@@ -96,8 +89,7 @@ class SignInActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedLi
                 })
     }
 
-    override fun onConnectionFailed(connectionResult: ConnectionResult) { // An unresolvable error has occurred and Google APIs (including Sign-In) will not
-// be available.
+    override fun onConnectionFailed(connectionResult: ConnectionResult) { // An unresolvable error has occurred and Google APIs (including Sign-In) will not be available.
         Log.d(TAG, "onConnectionFailed:$connectionResult")
         Toast.makeText(this, "Google Play Services error.", Toast.LENGTH_SHORT).show()
     }

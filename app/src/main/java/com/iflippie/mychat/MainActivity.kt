@@ -2,6 +2,7 @@ package com.iflippie.mychat
 
 import android.content.Intent
 import android.content.SharedPreferences
+import android.net.Uri
 import android.os.Bundle
 import android.preference.PreferenceManager
 import android.text.Editable
@@ -20,6 +21,8 @@ import com.firebase.ui.database.SnapshotParser
 import com.google.android.gms.auth.api.Auth
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.api.GoogleApiClient
+import com.google.android.gms.tasks.OnCompleteListener
+import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.DatabaseReference
@@ -27,7 +30,9 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.Query
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
+import com.google.firebase.storage.UploadTask
 import de.hdodenhof.circleimageview.CircleImageView
+import kotlinx.android.synthetic.main.activity_main.*
 
 
 class MainActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedListener {
@@ -50,9 +55,9 @@ class MainActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedList
     private var mAddMessageImageView: ImageView? = null
     private val auth: FirebaseAuth by lazy { FirebaseAuth.getInstance()}
     private val user: FirebaseUser? by lazy { auth.currentUser}
-    private var mFirebaseDatabaseReference: DatabaseReference? = null
-    private lateinit var mFirebaseAdapter: FirebaseRecyclerAdapter<FriendlyMessage, MessageViewHolder>
 
+    private lateinit var mFirebaseDatabaseReference: DatabaseReference
+    private lateinit var mFirebaseAdapter: FirebaseRecyclerAdapter<FriendlyMessage, MessageViewHolder>
     lateinit var options : FirebaseRecyclerOptions<FriendlyMessage>
     // Firebase instance variables
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -60,7 +65,7 @@ class MainActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedList
         setContentView(R.layout.activity_main)
         mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
         // Set default username is anonymous.
-        mUsername = MainActivity.Companion.ANONYMOUS
+        mUsername = ANONYMOUS
         mGoogleApiClient = GoogleApiClient.Builder(this)
             .enableAutoManage(this /* FragmentActivity */, this /* OnConnectionFailedListener */)
             .addApi(Auth.GOOGLE_SIGN_IN_API)
@@ -73,14 +78,13 @@ class MainActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedList
         mMessageRecyclerView!!.layoutManager = mLinearLayoutManager
 
         mFirebaseDatabaseReference = FirebaseDatabase.getInstance().reference
-        val parser =
-            SnapshotParser<FriendlyMessage> { dataSnapshot ->
+        val parser = SnapshotParser<FriendlyMessage> { dataSnapshot ->
                 val friendlyMessage = dataSnapshot.getValue(FriendlyMessage::class.java)
                 friendlyMessage?.setId(dataSnapshot.key!!)
                 friendlyMessage!!
             }
 
-        val messagesRef: Query? = mFirebaseDatabaseReference?.child(MESSAGES_CHILD)
+        val messagesRef: Query? = mFirebaseDatabaseReference.child(MESSAGES_CHILD)
         options = FirebaseRecyclerOptions.Builder<FriendlyMessage>().setQuery(messagesRef!!, parser).build()
         mFirebaseAdapter = object: FirebaseRecyclerAdapter<FriendlyMessage, MessageViewHolder>(options){
             override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MessageViewHolder {
@@ -150,13 +154,16 @@ class MainActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedList
             override fun afterTextChanged(editable: Editable) {}
         })
         mSendButton = findViewById<View>(R.id.sendButton) as Button
-        mSendButton!!.setOnClickListener {
-            // Send messages on click.
+        sendButton.setOnClickListener {
+            var friendlyMess = FriendlyMessage(messageEditText.text.toString(), mUsername, mPhotoUrl, null)
+            mFirebaseDatabaseReference.child(MESSAGES_CHILD).push().setValue(friendlyMess)
+            messageEditText.setText("")
         }
-        mAddMessageImageView =
-            findViewById<View>(R.id.addMessageImageView) as ImageView
-        mAddMessageImageView!!.setOnClickListener {
-            // Select image for image message on click.
+        addMessageImageView.setOnClickListener {
+            val intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
+            intent.addCategory(Intent.CATEGORY_OPENABLE)
+            intent.type = "image/*"
+            startActivityForResult(intent, REQUEST_IMAGE)
         }
         if (user != null) {
         mUsername = user?.displayName
@@ -173,17 +180,16 @@ class MainActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedList
     public override fun onStart() {
         super.onStart()
         // Check if user is signed in.
-// TODO: Add code to check if user is signed in.
     }
 
     public override fun onPause() {
         super.onPause()
-        mFirebaseAdapter?.stopListening()
+        mFirebaseAdapter.stopListening()
     }
 
     public override fun onResume() {
         super.onResume()
-        mFirebaseAdapter?.startListening()
+        mFirebaseAdapter.startListening()
     }
 
     public override fun onDestroy() {
@@ -210,13 +216,54 @@ class MainActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedList
         }
     }
 
-    override fun onConnectionFailed(connectionResult: ConnectionResult) { // An unresolvable error has occurred and Google APIs (including Sign-In) will not
-// be available.
-        Log.d(
-            MainActivity.Companion.TAG,
-            "onConnectionFailed:$connectionResult"
-        )
+    override fun onConnectionFailed(connectionResult: ConnectionResult) { // An unresolvable error has occurred and Google APIs (including Sign-In) will not be available.
+        Log.d(TAG, "onConnectionFailed:$connectionResult")
         Toast.makeText(this, "Google Play Services error.", Toast.LENGTH_SHORT).show()
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?){
+        super.onActivityResult(requestCode, resultCode, data)
+        Log.d(TAG, "onActivityResult: requestCode=$requestCode, resultCode=$resultCode")
+
+        if (requestCode == REQUEST_IMAGE) {
+            if (resultCode == RESULT_OK) {
+            if (data != null) {
+               val uri: Uri = data.data
+               Log.d(TAG, "Uri: $uri");
+
+              val tempMessage = FriendlyMessage(null, mUsername, mPhotoUrl, LOADING_IMAGE_URL)
+               mFirebaseDatabaseReference.child(MESSAGES_CHILD).push().setValue(tempMessage) { databaseError, databaseReference ->
+                   if (databaseError == null) {
+                       val key: String? = databaseReference.key
+                     val storageReference: StorageReference = FirebaseStorage.getInstance().getReference(user!!.uid).child(key!!).child(uri!!.lastPathSegment)
+                       putImageInStorage(storageReference, uri, key)
+                   } else {
+                       Log.w(TAG, "Unable to write message to database.", databaseError.toException())
+                   }
+               }
+                 }
+             }
+        }
+    }
+
+    private fun putImageInStorage( storageReference:StorageReference, uri: Uri , key: String ) {
+        storageReference.putFile(uri).addOnCompleteListener(this@MainActivity, object: OnCompleteListener<UploadTask.TaskSnapshot> {
+
+            override fun onComplete(task: Task<UploadTask.TaskSnapshot>) {
+                if (task.isSuccessful) {
+                    task.result?.metadata?.reference?.downloadUrl?.addOnCompleteListener(this@MainActivity, object: OnCompleteListener<Uri> {
+                        override fun onComplete(task: Task<Uri>) {
+                            if (task.isSuccessful) {
+                                val friendlyMessage = FriendlyMessage(null, mUsername, mPhotoUrl, task.result.toString())
+                                mFirebaseDatabaseReference.child(MESSAGES_CHILD).child(key).setValue(friendlyMessage)
+                            }
+                        }
+                    })
+                } else {
+                    Log.w(TAG, "Image upload task was not successful.", task.exception)
+                }
+            }
+        })
     }
 
     companion object {

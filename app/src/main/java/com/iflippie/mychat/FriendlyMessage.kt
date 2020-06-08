@@ -1,13 +1,11 @@
 package com.iflippie.mychat
 
-class FriendlyMessage {
+open class FriendlyMessage {
     private var id: String? = null
     private var text: String? = null
     private var name: String? = null
     private var photoUrl: String? = null
     private var imageUrl: String? = null
-
-    fun FriendlyMessage() {}
 
     fun FriendlyMessage(
         text: String?,
@@ -60,4 +58,11 @@ class FriendlyMessage {
     fun setImageUrl(imageUrl: String?) {
         this.imageUrl = imageUrl
     }
+    constructor() {}
+    constructor(
+        text: String?,
+        name: String?,
+        photoUrl: String?,
+        imageUrl: String?
+    )
 }
