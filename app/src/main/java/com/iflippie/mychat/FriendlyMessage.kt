@@ -7,12 +7,7 @@ open class FriendlyMessage {
     private var photoUrl: String? = null
     private var imageUrl: String? = null
 
-    fun FriendlyMessage(
-        text: String?,
-        name: String?,
-        photoUrl: String?,
-        imageUrl: String?
-    ) {
+    fun FriendlyMessage(text: String?, name: String?, photoUrl: String?, imageUrl: String?) {
         this.text = text
         this.name = name
         this.photoUrl = photoUrl
@@ -58,11 +53,6 @@ open class FriendlyMessage {
     fun setImageUrl(imageUrl: String?) {
         this.imageUrl = imageUrl
     }
-    constructor() {}
-    constructor(
-        text: String?,
-        name: String?,
-        photoUrl: String?,
-        imageUrl: String?
-    )
+
+    constructor(text: String?, name: String?, photoUrl: String?, imageUrl: String?)
 }
