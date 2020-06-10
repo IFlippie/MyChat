@@ -16,20 +16,18 @@ import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
+import kotlinx.android.synthetic.main.activity_sign_in.*
 
 
 class SignInActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedListener, View.OnClickListener {
-    private var mSignInButton: SignInButton? = null
+
     private var mGoogleApiClient: GoogleApiClient? = null
-    // Firebase instance variables
     private val auth: FirebaseAuth by lazy { FirebaseAuth.getInstance()}
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_sign_in)
-        // Assign fields
-        mSignInButton = findViewById<View>(R.id.sign_in_button) as SignInButton
         // Set click listeners
-        mSignInButton!!.setOnClickListener(this)
+        sign_in_button.setOnClickListener(this)
         // Configure Google Sign In
         val gso: GoogleSignInOptions = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestIdToken(getString(R.string.default_web_client_id))
