@@ -28,8 +28,8 @@ class MessageAdapter (private val messages: List<User>) : RecyclerView.Adapter<M
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         fun bind(message: User) {
             itemView.run {
-                messageTextView.text = message.text.toString()
-                messengerTextView.text = message.name.toString()
+                //messageTextView.text = message.text.toString()
+                //messengerTextView.text = message.name.toString()
             }
         }
     }

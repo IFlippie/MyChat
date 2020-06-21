@@ -34,30 +34,22 @@ class SignUpActivity : AppCompatActivity() {
                     val user = User(
                         userId = userID,
                         email = email,
-                        password = password,
                         rooms = listOf()
                     )
                     ref.setValue(user)
-
                     loginScreen()
-
                 } else {
                     // If sign in fails, display a message to the user.
                     println("createUserWithEmail:failure ${task.exception}")
                     Toast.makeText(baseContext, "Authentication failed.", Toast.LENGTH_SHORT).show()
-
                 }
             }
         }else {
-            Toast.makeText(baseContext, "email or password is empty failed.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(baseContext, "email or password is empty", Toast.LENGTH_SHORT).show()
         }
     }
 
-    private fun defaultScreen() {
-        val intent = Intent(this, defaultActivity::class.java)
-        startActivity(intent)
-        finish()
-    }
+
 
     private fun loginScreen() {
         val intent = Intent(this, LoginActivity::class.java)
