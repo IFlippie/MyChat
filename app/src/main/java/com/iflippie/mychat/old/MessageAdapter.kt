@@ -1,9 +1,10 @@
-package com.iflippie.mychat
+package com.iflippie.mychat.old
 
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.iflippie.mychat.R
 import kotlinx.android.synthetic.main.item_message.view.*
 
 class MessageAdapter (private val messages: List<BetterMessage>) : RecyclerView.Adapter<MessageAdapter.ViewHolder>() {

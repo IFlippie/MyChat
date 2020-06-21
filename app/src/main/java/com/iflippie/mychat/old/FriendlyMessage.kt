@@ -1,4 +1,4 @@
-package com.iflippie.mychat
+package com.iflippie.mychat.old
 
 open class FriendlyMessage {
     private var id: String? = null

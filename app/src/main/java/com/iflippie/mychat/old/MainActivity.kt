@@ -1,10 +1,8 @@
-package com.iflippie.mychat
+package com.iflippie.mychat.old
 
 import android.content.Intent
-import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Bundle
-import android.preference.PreferenceManager
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
@@ -21,8 +19,6 @@ import com.firebase.ui.database.SnapshotParser
 import com.google.android.gms.auth.api.Auth
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.api.GoogleApiClient
-import com.google.android.gms.tasks.OnCompleteListener
-import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.DatabaseReference
@@ -30,7 +26,7 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.Query
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
-import com.google.firebase.storage.UploadTask
+import com.iflippie.mychat.R
 import de.hdodenhof.circleimageview.CircleImageView
 import kotlinx.android.synthetic.main.activity_main.*
 
@@ -77,7 +73,11 @@ class MainActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedList
         mFirebaseAdapter = object: FirebaseRecyclerAdapter<FriendlyMessage, MessageViewHolder>(options){
             override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MessageViewHolder {
                 return MessageViewHolder(
-                    LayoutInflater.from(parent.context).inflate(R.layout.item_message, parent, false)
+                    LayoutInflater.from(parent.context).inflate(
+                        R.layout.item_message,
+                        parent,
+                        false
+                    )
                 )
             }
 
@@ -109,7 +109,9 @@ class MainActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedList
 
                 holder.messengerTextView.text = model.getName()
                 if (model.getPhotoUrl() == null) { holder.messengerImageView.setImageDrawable(
-                        ContextCompat.getDrawable(this@MainActivity, R.drawable.ic_account_circle_black_36dp))
+                        ContextCompat.getDrawable(this@MainActivity,
+                            R.drawable.ic_account_circle_black_36dp
+                        ))
                 } else {
                     Glide.with(this@MainActivity).load(model.getPhotoUrl()).into(holder.messengerImageView)
                 }
@@ -143,7 +145,12 @@ class MainActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedList
         })
 
         sendButton.setOnClickListener {
-            var friendlyMess = FriendlyMessage(messageEditText.text.toString(), mUsername, mPhotoUrl, null)
+            var friendlyMess = FriendlyMessage(
+                messageEditText.text.toString(),
+                mUsername,
+                mPhotoUrl,
+                null
+            )
             mFirebaseDatabaseReference.child(MESSAGES_CHILD).push().setValue(friendlyMess)
             messageEditText.setText("")
         }
@@ -151,7 +158,9 @@ class MainActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedList
             val intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
             intent.addCategory(Intent.CATEGORY_OPENABLE)
             intent.type = "image/*"
-            startActivityForResult(intent, REQUEST_IMAGE)
+            startActivityForResult(intent,
+                REQUEST_IMAGE
+            )
         }
         if (user != null) {
         mUsername = user?.displayName.toString()
@@ -195,7 +204,8 @@ class MainActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedList
             R.id.sign_out_menu -> {
                 auth.signOut()
                 Auth.GoogleSignInApi.signOut(mGoogleApiClient)
-                mUsername = ANONYMOUS
+                mUsername =
+                    ANONYMOUS
                 val intent = Intent(this, SignInActivity::class.java)
                 startActivity(intent)
                 true
@@ -219,7 +229,12 @@ class MainActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedList
                val uri: Uri = data.data
                Log.d(TAG, "Uri: $uri");
 
-              val tempMessage = FriendlyMessage(null, mUsername, mPhotoUrl, LOADING_IMAGE_URL)
+              val tempMessage = FriendlyMessage(
+                  null,
+                  mUsername,
+                  mPhotoUrl,
+                  LOADING_IMAGE_URL
+              )
                mFirebaseDatabaseReference.child(MESSAGES_CHILD).push().setValue(tempMessage) { databaseError, databaseReference ->
                    if (databaseError == null) {
                        val key: String? = databaseReference.key
@@ -239,7 +254,13 @@ class MainActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedList
             if (task.isSuccessful) {
                 task.result?.metadata?.reference?.downloadUrl?.addOnCompleteListener(this@MainActivity) { task ->
                     if (task.isSuccessful) {
-                        val friendlyMessage = FriendlyMessage(null, mUsername, mPhotoUrl, task.result.toString())
+                        val friendlyMessage =
+                            FriendlyMessage(
+                                null,
+                                mUsername,
+                                mPhotoUrl,
+                                task.result.toString()
+                            )
                         mFirebaseDatabaseReference.child(MESSAGES_CHILD).child(key).setValue(friendlyMessage)
                     }
                 }
