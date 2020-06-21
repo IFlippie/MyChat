@@ -4,10 +4,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.iflippie.mychat.User
 import com.iflippie.mychat.R
 import kotlinx.android.synthetic.main.item_message.view.*
 
-class MessageAdapter (private val messages: List<BetterMessage>) : RecyclerView.Adapter<MessageAdapter.ViewHolder>() {
+class MessageAdapter (private val messages: List<User>) : RecyclerView.Adapter<MessageAdapter.ViewHolder>() {
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -25,7 +26,7 @@ class MessageAdapter (private val messages: List<BetterMessage>) : RecyclerView.
     }
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        fun bind(message: BetterMessage) {
+        fun bind(message: User) {
             itemView.run {
                 messageTextView.text = message.text.toString()
                 messengerTextView.text = message.name.toString()
