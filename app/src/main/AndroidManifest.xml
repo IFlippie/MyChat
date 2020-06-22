@@ -11,12 +11,14 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <activity android:name=".QueryActivity"></activity>
         <activity
             android:name=".DefaultActivity"
             android:label="MyChatty"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".SignUpActivity"
-                android:theme="@style/AppTheme.NoActionBar"/>
+        <activity
+            android:name=".SignUpActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".LoginActivity"
             android:label="@string/title_activity_Login"
