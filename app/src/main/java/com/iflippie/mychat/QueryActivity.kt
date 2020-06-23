@@ -21,21 +21,24 @@ class QueryActivity : AppCompatActivity() {
         rvQuery.adapter = queryAdapter
 
         val userEmail = intent.getStringExtra(DefaultActivity.ADD_USER_EMAIL)
-           val emailQuery = FirebaseDatabase.getInstance().getReference("Users/")
-               //.orderByChild("email").equalTo(userEmail)
+           val emailQuery = FirebaseDatabase.getInstance().getReference("/Users")
+               .orderByChild("email")
+               .equalTo(userEmail)
 
             emailQuery.addListenerForSingleValueEvent(object: ValueEventListener{
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
                     if(dataSnapshot.exists()){
                         totalResults.clear()
                         for (i in dataSnapshot.children){
-                            val user = dataSnapshot.getValue(User::class.java)
+                            val user = i.getValue(User::class.java)
 
                             user?.let {
                                 totalResults.add(it)
-                                queryAdapter.notifyDataSetChanged()
                             }
                         }
+                        println(totalResults.size)
+                        println(totalResults)
+                        queryAdapter.notifyDataSetChanged()
                     }
                 }
                 override fun onCancelled(dataBaseError: DatabaseError) {
