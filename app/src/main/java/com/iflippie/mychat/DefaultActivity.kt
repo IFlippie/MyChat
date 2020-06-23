@@ -60,6 +60,7 @@ class DefaultActivity : AppCompatActivity() {
                 Toast.makeText(baseContext, "email is empty", Toast.LENGTH_SHORT).show()
             }
         }
+        dialog.show()
     }
 
     private fun replaceFragment(fragment: Fragment){

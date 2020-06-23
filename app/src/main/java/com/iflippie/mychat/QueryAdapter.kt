@@ -15,6 +15,7 @@ class QueryAdapter(private val users: List<User>) : RecyclerView.Adapter<QueryAd
     private lateinit var ref: DatabaseReference
     private lateinit var userRef: DatabaseReference
     private val auth: FirebaseAuth by lazy { FirebaseAuth.getInstance()}
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return ViewHolder(
             LayoutInflater.from(parent.context).inflate(R.layout.item_query, parent, false)

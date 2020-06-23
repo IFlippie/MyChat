@@ -2,13 +2,14 @@ package com.iflippie.mychat
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
+import kotlinx.android.synthetic.main.activity_query.*
 
 class QueryActivity : AppCompatActivity() {
-    private val ref: FirebaseDatabase by lazy { FirebaseDatabase.getInstance()}
     private val auth: FirebaseAuth by lazy { FirebaseAuth.getInstance()}
-    private lateinit var emailQuery: Query
     private val totalResults = mutableListOf<User>()
     private val queryAdapter = QueryAdapter(totalResults)
 
@@ -16,8 +17,12 @@ class QueryActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_query)
 
+        rvQuery.layoutManager = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
+        rvQuery.adapter = queryAdapter
+
         val userEmail = intent.getStringExtra(DefaultActivity.ADD_USER_EMAIL)
-            emailQuery = ref.getReference("Users").orderByChild("email").equalTo(userEmail)
+           val emailQuery = FirebaseDatabase.getInstance().getReference("Users/")
+               //.orderByChild("email").equalTo(userEmail)
 
             emailQuery.addListenerForSingleValueEvent(object: ValueEventListener{
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
