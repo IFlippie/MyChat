@@ -8,9 +8,10 @@ import kotlinx.android.parcel.Parcelize
 @IgnoreExtraProperties
 data class ChatRoom (
     val uid :String?,
-    val starter :String?,
-    val receiver : String?,
-    val messages: List<String>
+    val p1 : String?,
+    val p2 : String?,
+    val messagesP1: List<String>,
+    val messagesP2: List<String>
 ) : Parcelable {
-    constructor() : this("",  "", "", listOf())
+    constructor() : this("",  "", "", listOf(), listOf())
 }

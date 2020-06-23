@@ -29,7 +29,7 @@ class FirstFragment : Fragment() {
     }
 
     private fun initViews() {
-        rvRooms.layoutManager = LinearLayoutManager(activity, RecyclerView.VERTICAL, false)
+        rvRooms?.layoutManager = LinearLayoutManager(activity, RecyclerView.VERTICAL, false)
         //rvRooms.adapter = RoomAdapter
         rvRooms.addItemDecoration(DividerItemDecoration(activity, DividerItemDecoration.VERTICAL))
         //createItemTouchHelper().attachToRecyclerView()
