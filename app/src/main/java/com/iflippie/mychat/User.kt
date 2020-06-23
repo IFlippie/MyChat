@@ -8,8 +8,9 @@ import kotlinx.android.parcel.Parcelize
 @IgnoreExtraProperties
 data class User (
     val userId :String?,
+    val name :String?,
     val email : String?,
     val rooms: List<String>
 ) : Parcelable {
-    constructor() : this("",  "", listOf())
+    constructor() : this("",  "", "", listOf())
 }

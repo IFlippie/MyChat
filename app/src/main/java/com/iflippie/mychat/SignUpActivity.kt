@@ -24,7 +24,8 @@ class SignUpActivity : AppCompatActivity() {
     private fun signUp(){
         val email = etmail.text.toString()
         val password = etpass.text.toString()
-        if(email.isNotEmpty() && password.isNotEmpty()){
+        val name = etname.text.toString()
+        if(email.isNotEmpty() && password.isNotEmpty() && name.isNotEmpty()){
             auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(this){task ->
                 if(task.isSuccessful){
                     // Sign in success, update UI with the signed-in user's information
@@ -33,6 +34,7 @@ class SignUpActivity : AppCompatActivity() {
                     ref = FirebaseDatabase.getInstance().getReference("/Users/$userID")
                     val user = User(
                         userId = userID,
+                        name = name,
                         email = email,
                         rooms = listOf()
                     )
@@ -45,7 +47,7 @@ class SignUpActivity : AppCompatActivity() {
                 }
             }
         }else {
-            Toast.makeText(baseContext, "email or password is empty", Toast.LENGTH_SHORT).show()
+            Toast.makeText(baseContext, "email, password or name is empty", Toast.LENGTH_SHORT).show()
         }
     }
 
