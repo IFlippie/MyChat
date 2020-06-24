@@ -5,12 +5,10 @@ import com.google.firebase.database.IgnoreExtraProperties
 import kotlinx.android.parcel.Parcelize
 
 @Parcelize
-@IgnoreExtraProperties
 data class User (
     val userId :String?,
     val name :String?,
-    val email : String?,
-    val rooms: List<String>
+    val email : String?
 ) : Parcelable {
-    constructor() : this("",  "", "", listOf())
+    constructor() : this("",  "", "")
 }

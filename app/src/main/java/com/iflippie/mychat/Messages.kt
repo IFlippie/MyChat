@@ -5,7 +5,6 @@ import com.google.firebase.database.IgnoreExtraProperties
 import kotlinx.android.parcel.Parcelize
 
 @Parcelize
-@IgnoreExtraProperties
 data class Messages (
     val uid :String?,
     val email : String?,

@@ -21,7 +21,7 @@ class QueryActivity : AppCompatActivity() {
         rvQuery.adapter = queryAdapter
 
         val userEmail = intent.getStringExtra(DefaultActivity.ADD_USER_EMAIL)
-           val emailQuery = FirebaseDatabase.getInstance().getReference("/Users")
+           val emailQuery = FirebaseDatabase.getInstance().getReference("Users/")
                .orderByChild("email")
                .equalTo(userEmail)
 
@@ -31,13 +31,10 @@ class QueryActivity : AppCompatActivity() {
                         totalResults.clear()
                         for (i in dataSnapshot.children){
                             val user = i.getValue(User::class.java)
-
                             user?.let {
                                 totalResults.add(it)
                             }
                         }
-                        println(totalResults.size)
-                        println(totalResults)
                         queryAdapter.notifyDataSetChanged()
                     }
                 }

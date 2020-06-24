@@ -35,8 +35,7 @@ class SignUpActivity : AppCompatActivity() {
                     val user = User(
                         userId = userID,
                         name = name,
-                        email = email,
-                        rooms = listOf()
+                        email = email
                     )
                     ref.setValue(user)
                     loginScreen()

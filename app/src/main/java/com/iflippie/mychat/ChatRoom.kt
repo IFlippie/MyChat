@@ -1,11 +1,9 @@
 package com.iflippie.mychat
 
 import android.os.Parcelable
-import com.google.firebase.database.IgnoreExtraProperties
 import kotlinx.android.parcel.Parcelize
 
 @Parcelize
-@IgnoreExtraProperties
 data class ChatRoom (
     val uid :String?,
     val p1 : String?,
@@ -13,8 +11,7 @@ data class ChatRoom (
     val p1Name : String?,
     val p2 : String?,
     val p2Email : String?,
-    val p2Name : String?,
-    val messagesList: List<Messages>
+    val p2Name : String?
 ) : Parcelable {
-    constructor() : this("",  "", "", "",  "", "", "",listOf())
+    constructor() : this("",  "", "", "",  "", "", "")
 }

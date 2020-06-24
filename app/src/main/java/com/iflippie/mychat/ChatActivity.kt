@@ -18,13 +18,14 @@ class ChatActivity : AppCompatActivity() {
     private val auth: FirebaseAuth by lazy { FirebaseAuth.getInstance()}
     private lateinit var messagesQuery : Query
     private var usernameString: String? = null
+    private var uidString: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_chat)
         val extras = intent.extras
         usernameString = extras?.getString(RoomAdapter.EXTRA_NAME)
-        val uidString = extras?.getString(RoomAdapter.EXTRA_UID)
+        uidString = extras?.getString(RoomAdapter.EXTRA_UID)
         rvMessages.layoutManager = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
         rvMessages.adapter = chatAdapter
         messagesQuery = ref.getReference("ChatRooms/${uidString}/messagesList")
@@ -58,7 +59,7 @@ class ChatActivity : AppCompatActivity() {
         if(theText.isEmpty()){
             Toast.makeText(this, "message is empty", Toast.LENGTH_SHORT).show()
         } else {
-            val sendRef: DatabaseReference = FirebaseDatabase.getInstance().getReference("ChatRooms").child("messagesList")
+            val sendRef: DatabaseReference = FirebaseDatabase.getInstance().getReference("ChatRooms").child(uidString!!).child("messagesList")
 
             val refKey = sendRef.push().key
             val message = Messages(

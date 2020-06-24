@@ -27,7 +27,7 @@ class ChatAdapter (private val messages: List<Messages>) : RecyclerView.Adapter<
         fun bind(message: Messages) {
             itemView.run {
                 queryMessage.text = message.tekst.toString()
-                messageName.text = message.email.toString()
+                messageName.text = message.name.toString()
                 messageEmail.text = message.email.toString()
             }
         }
