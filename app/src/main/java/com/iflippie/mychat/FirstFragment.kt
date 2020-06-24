@@ -15,6 +15,9 @@ import kotlinx.android.synthetic.main.fragment_first.*
  */
 class FirstFragment : Fragment() {
 
+    private val totalRooms = mutableListOf<ChatRoom>()
+    private val roomAdapter = RoomAdapter(totalRooms)
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_first, container, false)
@@ -30,8 +33,8 @@ class FirstFragment : Fragment() {
 
     private fun initViews() {
         rvRooms?.layoutManager = LinearLayoutManager(activity, RecyclerView.VERTICAL, false)
-        //rvRooms.adapter = RoomAdapter
-        rvRooms.addItemDecoration(DividerItemDecoration(activity, DividerItemDecoration.VERTICAL))
+        rvRooms.adapter = roomAdapter
+        //rvRooms.addItemDecoration(DividerItemDecoration(activity, DividerItemDecoration.VERTICAL))
         //createItemTouchHelper().attachToRecyclerView()
         //setHasOptionsMenu(true)
     }

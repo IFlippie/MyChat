@@ -5,16 +5,14 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
-import com.google.android.material.snackbar.Snackbar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
 import com.afollestad.materialdialogs.MaterialDialog
 import com.afollestad.materialdialogs.customview.customView
-import com.google.firebase.database.FirebaseDatabase
 import kotlinx.android.synthetic.main.activity_default.*
 import kotlinx.android.synthetic.main.dialog_query_email.*
-import kotlinx.android.synthetic.main.dialog_query_email.view.*
+
 
 class DefaultActivity : AppCompatActivity() {
 
