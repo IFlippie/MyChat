@@ -1,4 +1,4 @@
-package com.iflippie.mychat.ui.notifications
+package com.iflippie.mychat.old.ui.notifications
 
 import android.os.Bundle
 import android.view.LayoutInflater

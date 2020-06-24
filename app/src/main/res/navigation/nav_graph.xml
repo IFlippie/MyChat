@@ -16,7 +16,7 @@
     </fragment>
     <fragment
         android:id="@+id/SecondFragment"
-        android:name="com.iflippie.mychat.SecondFragment"
+        android:name="com.iflippie.mychat.SettingsFragment"
         android:label="@string/second_fragment_label"
         tools:layout="@layout/fragment_second">
 
