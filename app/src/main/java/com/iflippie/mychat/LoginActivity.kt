@@ -16,11 +16,11 @@ class LoginActivity : AppCompatActivity() {
         setContentView(R.layout.activity_login)
         auth = FirebaseAuth.getInstance()
 
-//        if(auth.currentUser != null){
-//            defaultScreen()
-//        }else{
-//            println("User is signed out")
-//        }
+        if(auth.currentUser != null){
+            defaultScreen()
+        }else{
+            println("User is signed out")
+        }
         btLogin.setOnClickListener { logIn() }
         btSignAct.setOnClickListener { toSignUp() }
     }
