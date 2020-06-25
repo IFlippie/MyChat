@@ -1,7 +1,7 @@
 package com.iflippie.mychat.database
 
 import android.content.Context
-import com.iflippie.mychat.ColorItem
+import com.iflippie.mychat.model.ColorItem
 
 class ColoursRepository(context: Context) {
 

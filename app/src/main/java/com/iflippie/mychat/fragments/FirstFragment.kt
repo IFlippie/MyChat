@@ -1,15 +1,17 @@
-package com.iflippie.mychat
+package com.iflippie.mychat.fragments
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
+import com.iflippie.mychat.R
+import com.iflippie.mychat.RoomAdapter
+import com.iflippie.mychat.model.ChatRoom
 import kotlinx.android.synthetic.main.fragment_first.*
 
 /**

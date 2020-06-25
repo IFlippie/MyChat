@@ -1,7 +1,7 @@
 package com.iflippie.mychat.database
 
 import androidx.room.*
-import com.iflippie.mychat.ColorItem
+import com.iflippie.mychat.model.ColorItem
 
 @Dao
 interface ColorDao {

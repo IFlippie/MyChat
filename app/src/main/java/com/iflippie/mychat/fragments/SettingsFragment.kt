@@ -1,4 +1,4 @@
-package com.iflippie.mychat
+package com.iflippie.mychat.fragments
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -12,7 +12,10 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.iflippie.mychat.ColorAdapter
+import com.iflippie.mychat.R
 import com.iflippie.mychat.database.ColoursRepository
+import com.iflippie.mychat.model.ColorItem
 import kotlinx.android.synthetic.main.fragment_second.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -26,7 +29,10 @@ import kotlinx.coroutines.withContext
 class SettingsFragment : Fragment() {
 
     private val colors = arrayListOf<ColorItem>()
-    private val colorAdapter = ColorAdapter(colors) { colorItem -> onColorClick(colorItem) }
+    private val colorAdapter =
+        ColorAdapter(colors) { colorItem ->
+            onColorClick(colorItem)
+        }
     private lateinit var viewModel: SettingsFragmentViewModel
     private val setColor = arrayListOf<ColorItem>()
     private lateinit var coloursRepository: ColoursRepository

@@ -1,5 +1,7 @@
 package com.iflippie.mychat
 
+import com.iflippie.mychat.model.ColorItem
+
 class ColorRepository {
     fun getColorItems(): List<ColorItem> {
         return arrayListOf(

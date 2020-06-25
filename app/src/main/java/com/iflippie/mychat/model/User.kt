@@ -1,4 +1,4 @@
-package com.iflippie.mychat
+package com.iflippie.mychat.model
 
 import android.os.Parcelable
 import com.google.firebase.database.IgnoreExtraProperties

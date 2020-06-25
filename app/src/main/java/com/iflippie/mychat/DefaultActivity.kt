@@ -12,6 +12,7 @@ import androidx.navigation.findNavController
 import com.afollestad.materialdialogs.MaterialDialog
 import com.afollestad.materialdialogs.customview.customView
 import com.iflippie.mychat.database.ColoursRepository
+import com.iflippie.mychat.model.ColorItem
 import kotlinx.android.synthetic.main.activity_default.*
 import kotlinx.android.synthetic.main.dialog_query_email.*
 import kotlinx.coroutines.CoroutineScope

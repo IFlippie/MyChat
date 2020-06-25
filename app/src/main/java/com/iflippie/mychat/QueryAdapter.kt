@@ -8,6 +8,8 @@ import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
+import com.iflippie.mychat.model.ChatRoom
+import com.iflippie.mychat.model.User
 import kotlinx.android.synthetic.main.item_query.view.*
 
 class QueryAdapter(private val users: List<User>) : RecyclerView.Adapter<QueryAdapter.ViewHolder>() {
@@ -64,13 +66,13 @@ class QueryAdapter(private val users: List<User>) : RecyclerView.Adapter<QueryAd
                     friendRef = FirebaseDatabase.getInstance().getReference("/Users/$friendID").child("rooms")
                     val refKey = ref.push().key
                     val newChat = ChatRoom(
-                            uid = refKey,
-                            p1 = userID,
-                            p1Email = auth.currentUser?.email,
-                            p1Name = currentUserName,
-                            p2 = result.userId,
-                            p2Email = result.email,
-                            p2Name = result.name
+                        uid = refKey,
+                        p1 = userID,
+                        p1Email = auth.currentUser?.email,
+                        p1Name = currentUserName,
+                        p2 = result.userId,
+                        p2Email = result.email,
+                        p2Name = result.name
                     )
                     if(refKey != null) {
                         ref.child(refKey).setValue(newChat).addOnCompleteListener {

@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.iflippie.mychat.model.ColorItem
 import kotlinx.android.synthetic.main.item_color.view.*
 
 class ColorAdapter(private val colors: List<ColorItem>, private val onClick: (ColorItem) -> Unit) : RecyclerView.Adapter<ColorAdapter.ViewHolder>() {

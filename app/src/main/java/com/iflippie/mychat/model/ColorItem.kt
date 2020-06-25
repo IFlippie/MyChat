@@ -1,4 +1,4 @@
-package com.iflippie.mychat
+package com.iflippie.mychat.model
 
 import android.os.Parcelable
 import androidx.room.ColumnInfo

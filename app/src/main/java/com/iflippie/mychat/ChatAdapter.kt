@@ -4,6 +4,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.iflippie.mychat.model.Messages
 import kotlinx.android.synthetic.main.item_message.view.*
 
 class ChatAdapter (private val messages: List<Messages>) : RecyclerView.Adapter<ChatAdapter.ViewHolder>() {

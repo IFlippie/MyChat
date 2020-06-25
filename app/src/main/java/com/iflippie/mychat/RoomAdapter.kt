@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
+import com.iflippie.mychat.model.ChatRoom
 import kotlinx.android.synthetic.main.item_room.view.*
 
 class RoomAdapter (private val rooms: List<ChatRoom>) : RecyclerView.Adapter<RoomAdapter.ViewHolder>() {
